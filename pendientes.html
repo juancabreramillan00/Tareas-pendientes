@@ -1,0 +1,402 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #F5F1E6;
+    --paper-raised: #FBF9F3;
+    --ink: #26271F;
+    --ink-soft: #6B6A5C;
+    --olive: #5B6B3D;
+    --olive-deep: #46542F;
+    --line: #DAD4C2;
+    --done: #A8A38D;
+    --danger: #A24B3E;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+  }
+
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    position: relative;
+  }
+
+  header {
+    padding: 28px 20px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .date-line {
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-transform: capitalize;
+    margin-bottom: 4px;
+  }
+
+  h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .status-line {
+    font-size: 14px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .status-line strong {
+    color: var(--olive-deep);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  main {
+    flex: 1;
+    padding: 12px 16px 140px;
+    overflow-y: auto;
+  }
+
+  .section-label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 20px 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  ul.tasks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  li.task {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 13px 12px;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  li.task.done {
+    opacity: 0.55;
+  }
+
+  .check {
+    flex-shrink: 0;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    border: 1.5px solid var(--olive);
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .check svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  li.task.done .check {
+    background: var(--olive);
+  }
+
+  li.task.done .check svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .task-text {
+    flex: 1;
+    font-size: 15.5px;
+    line-height: 1.4;
+    padding-top: 1px;
+    word-break: break-word;
+  }
+
+  li.task.done .task-text {
+    text-decoration: line-through;
+    text-decoration-color: var(--done);
+    color: var(--ink-soft);
+  }
+
+  .task-time {
+    display: block;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  .remove {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    color: var(--ink-soft);
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    opacity: 0.5;
+  }
+
+  .remove:hover { opacity: 1; color: var(--danger); }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+
+  .empty .glyph {
+    font-family: 'Source Serif 4', serif;
+    font-size: 32px;
+    color: var(--olive);
+    margin-bottom: 10px;
+  }
+
+  .empty p { font-size: 14px; margin: 0; }
+
+  form#add-form {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    background: linear-gradient(to top, var(--paper) 70%, transparent);
+    padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+    display: flex;
+    gap: 8px;
+  }
+
+  #new-task {
+    flex: 1;
+    border: 1.5px solid var(--line);
+    background: var(--paper-raised);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-size: 15.5px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    outline: none;
+  }
+
+  #new-task:focus {
+    border-color: var(--olive);
+  }
+
+  #add-btn {
+    flex-shrink: 0;
+    width: 46px;
+    border: none;
+    border-radius: 10px;
+    background: var(--olive);
+    color: var(--paper-raised);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  #add-btn:active { background: var(--olive-deep); }
+
+  .loading-note {
+    text-align: center;
+    padding: 40px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+</style>
+
+<div id="app">
+  <header>
+    <div class="date-line" id="date-line"></div>
+    <h1>Pendientes</h1>
+    <div class="status-line" id="status-line"></div>
+  </header>
+
+  <main id="main">
+    <div class="loading-note">Cargando…</div>
+  </main>
+
+  <form id="add-form">
+    <input id="new-task" type="text" placeholder="Añadir tarea…" autocomplete="off" maxlength="200" />
+    <button id="add-btn" type="submit" aria-label="Añadir">+</button>
+  </form>
+</div>
+
+<script>
+  const STORAGE_KEY = 'tasks';
+  let tasks = [];
+  let loaded = false;
+
+  const mainEl = document.getElementById('main');
+  const statusEl = document.getElementById('status-line');
+  const dateEl = document.getElementById('date-line');
+  const form = document.getElementById('add-form');
+  const input = document.getElementById('new-task');
+
+  dateEl.textContent = new Date().toLocaleDateString('es-ES', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function timeLabel(ts) {
+    const d = new Date(ts);
+    const today = new Date();
+    const sameDay = d.toDateString() === today.toDateString();
+    if (sameDay) {
+      return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    }
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  }
+
+  async function loadTasks() {
+    try {
+      const result = await window.storage.get(STORAGE_KEY, false);
+      tasks = result ? JSON.parse(result.value) : [];
+    } catch (e) {
+      tasks = [];
+    }
+    loaded = true;
+    render();
+  }
+
+  async function saveTasks() {
+    try {
+      await window.storage.set(STORAGE_KEY, JSON.stringify(tasks), false);
+    } catch (e) {
+      console.error('No se pudo guardar', e);
+    }
+  }
+
+  function render() {
+    if (!loaded) return;
+
+    const pending = tasks.filter(t => !t.done).sort((a, b) => b.createdAt - a.createdAt);
+    const done = tasks.filter(t => t.done).sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0));
+
+    statusEl.innerHTML = pending.length
+      ? `<strong>${pending.length}</strong> ${pending.length === 1 ? 'pendiente' : 'pendientes'}`
+      : `Todo hecho por hoy`;
+
+    if (tasks.length === 0) {
+      mainEl.innerHTML = `
+        <div class="empty">
+          <div class="glyph">＋</div>
+          <p>Aún no hay nada anotado.<br>Añade tu primera tarea abajo.</p>
+        </div>`;
+      return;
+    }
+
+    let html = '';
+
+    if (pending.length) {
+      html += `<ul class="tasks">` + pending.map(taskRow).join('') + `</ul>`;
+    }
+
+    if (done.length) {
+      html += `<div class="section-label">Completadas</div>`;
+      html += `<ul class="tasks">` + done.map(taskRow).join('') + `</ul>`;
+    }
+
+    mainEl.innerHTML = html;
+  }
+
+  function taskRow(t) {
+    return `
+      <li class="task ${t.done ? 'done' : ''}" data-id="${t.id}">
+        <div class="check" data-action="toggle">
+          <svg viewBox="0 0 16 16" fill="none">
+            <path d="M3 8.5L6.2 12L13 4" stroke="#FBF9F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="task-text">
+          ${escapeHtml(t.text)}
+          <span class="task-time">${timeLabel(t.done ? (t.doneAt || t.createdAt) : t.createdAt)}</span>
+        </div>
+        <button class="remove" data-action="remove" aria-label="Eliminar">×</button>
+      </li>`;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  mainEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const li = e.target.closest('li.task');
+    const id = li.dataset.id;
+    const action = btn.dataset.action;
+
+    if (action === 'toggle') {
+      const t = tasks.find(t => t.id === id);
+      t.done = !t.done;
+      t.doneAt = t.done ? Date.now() : null;
+      saveTasks();
+      render();
+    } else if (action === 'remove') {
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      render();
+    }
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    tasks.push({ id: uid(), text, done: false, createdAt: Date.now(), doneAt: null });
+    input.value = '';
+    saveTasks();
+    render();
+  });
+
+  loadTasks();
+</script>
