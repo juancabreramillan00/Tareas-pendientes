@@ -10,16 +10,25 @@
     --ink-soft: #6B6A5C;
     --olive: #5B6B3D;
     --olive-deep: #46542F;
+    --olive-wash: #E4E7D8;
+    --plum: #7B5468;
+    --plum-wash: #EFE1E8;
+    --rose: #A85566;
+    --rose-wash: #F3E1E4;
+    --teal: #3E6B75;
+    --teal-wash: #DEEAEB;
     --line: #DAD4C2;
     --done: #A8A38D;
     --danger: #A24B3E;
+    --danger-wash: #F1DFDA;
+    --amber: #A9791E;
+    --amber-wash: #F1E6CE;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   html, body {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     background: var(--paper);
     color: var(--ink);
     font-family: 'Inter', sans-serif;
@@ -27,7 +36,7 @@
   }
 
   #app {
-    max-width: 480px;
+    max-width: 520px;
     margin: 0 auto;
     min-height: 100vh;
     display: flex;
@@ -37,7 +46,7 @@
   }
 
   header {
-    padding: 28px 20px 16px;
+    padding: 26px 20px 14px;
     border-bottom: 1px solid var(--line);
   }
 
@@ -48,318 +57,493 @@
     margin-bottom: 4px;
   }
 
+  .week-line {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+
   h1 {
     font-family: 'Source Serif 4', serif;
     font-weight: 600;
-    font-size: 28px;
+    font-size: 27px;
     margin: 0 0 6px;
     letter-spacing: -0.01em;
   }
 
-  .status-line {
-    font-size: 14px;
-    color: var(--ink-soft);
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
+  .status-line { font-size: 14px; color: var(--ink-soft); }
+  .status-line strong { color: var(--olive-deep); font-weight: 600; }
+  .status-line .incident-count { color: var(--danger); font-weight: 600; }
+
+  .history-link {
+    display: block;
+    margin-top: 10px;
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    color: var(--olive-deep);
+    text-decoration: underline;
+    text-decoration-color: var(--olive-wash);
+    cursor: pointer;
   }
 
-  .status-line strong {
-    color: var(--olive-deep);
+  .history-week-block { margin-bottom: 22px; }
+  .history-week-title {
+    font-size: 13px;
     font-weight: 600;
-    font-size: 15px;
+    color: var(--ink);
+    margin: 0 0 4px;
   }
+  .history-week-sub { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 10px; }
+  .history-empty { color: var(--ink-soft); font-size: 14px; padding: 30px 0; text-align: center; }
 
   main {
     flex: 1;
-    padding: 12px 16px 140px;
+    padding: 10px 16px 110px;
     overflow-y: auto;
   }
 
   .section-label {
     font-size: 12px;
     color: var(--ink-soft);
-    margin: 20px 6px 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    margin: 22px 6px 8px;
+    display: flex; align-items: center; gap: 8px;
   }
+  .section-label.incident-label { color: var(--danger); }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
-  .section-label::after {
-    content: '';
+  ul.tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+  li.task {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    transition: opacity 0.2s ease;
+  }
+  li.task.status-incident { border-color: #D9B9AE; }
+  li.task.status-done, li.task.status-cancelled { opacity: 0.6; }
+
+  .task-top { display: flex; align-items: flex-start; gap: 10px; }
+
+  .task-title-row {
     flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-
-  ul.tasks {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 6px;
   }
 
-  li.task {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    background: var(--paper-raised);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 13px 12px;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-  }
-
-  li.task.done {
-    opacity: 0.55;
-  }
-
-  .check {
-    flex-shrink: 0;
-    width: 21px;
-    height: 21px;
-    border-radius: 50%;
-    border: 1.5px solid var(--olive);
-    margin-top: 1px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  .check svg {
-    width: 12px;
-    height: 12px;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: opacity 0.15s ease, transform 0.15s ease;
-  }
-
-  li.task.done .check {
-    background: var(--olive);
-  }
-
-  li.task.done .check svg {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .task-text {
-    flex: 1;
+  .task-title {
     font-size: 15.5px;
-    line-height: 1.4;
-    padding-top: 1px;
-    word-break: break-word;
+    font-weight: 500;
+    line-height: 1.35;
   }
-
-  li.task.done .task-text {
+  li.task.status-done .task-title, li.task.status-cancelled .task-title {
     text-decoration: line-through;
     text-decoration-color: var(--done);
     color: var(--ink-soft);
+    font-weight: 400;
   }
 
-  .task-time {
-    display: block;
-    font-size: 11.5px;
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    line-height: 1.6;
+    white-space: nowrap;
+  }
+  .pill-tag-Casa { background: var(--olive-wash); color: var(--olive-deep); }
+  .pill-tag-Personal { background: var(--plum-wash); color: var(--plum); }
+  .pill-tag-Regalos { background: var(--rose-wash); color: var(--rose); }
+  .pill-tag-Invitaciones { background: var(--teal-wash); color: var(--teal); }
+  .pill-updated { background: var(--amber-wash); color: var(--amber); }
+  .pill-assignee-Juan { background: var(--olive-wash); color: var(--olive-deep); }
+  .pill-assignee-Ana { background: var(--plum-wash); color: var(--plum); }
+  .pill-deadline { background: var(--paper); border: 1px solid var(--line); color: var(--ink-soft); }
+  .pill-deadline.overdue { background: var(--danger-wash); border-color: transparent; color: var(--danger); }
+  .pill-status-cancelled { background: var(--paper); border: 1px solid var(--line); color: var(--ink-soft); }
+
+  .task-desc {
+    font-size: 13.5px;
     color: var(--ink-soft);
-    margin-top: 2px;
+    margin-top: 6px;
+    line-height: 1.45;
+    white-space: pre-wrap;
   }
 
-  .remove {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
+  .task-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .incident-note {
+    margin-top: 9px;
+    background: var(--danger-wash);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #7A392F;
+    line-height: 1.4;
+  }
+  .incident-note strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px; opacity: 0.8; }
+
+  .task-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 11px;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
+  }
+
+  .action-btn {
     border: none;
     background: none;
-    color: var(--ink-soft);
-    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 7px;
     cursor: pointer;
-    border-radius: 6px;
-    opacity: 0.5;
+    color: var(--ink-soft);
   }
-
-  .remove:hover { opacity: 1; color: var(--danger); }
+  .action-btn:active { background: var(--paper); }
+  .action-btn.complete { color: var(--olive-deep); }
+  .action-btn.incident { color: var(--amber); }
+  .action-btn.cancel { color: var(--danger); }
+  .action-btn.edit { color: var(--ink); }
+  .action-btn.reopen { color: var(--olive-deep); }
 
   .empty {
     text-align: center;
     padding: 60px 20px;
     color: var(--ink-soft);
   }
-
-  .empty .glyph {
-    font-family: 'Source Serif 4', serif;
-    font-size: 32px;
-    color: var(--olive);
-    margin-bottom: 10px;
-  }
-
+  .empty .glyph { font-family: 'Source Serif 4', serif; font-size: 32px; color: var(--olive); margin-bottom: 10px; }
   .empty p { font-size: 14px; margin: 0; }
 
-  form#add-form {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-width: 480px;
-    margin: 0 auto;
-    background: linear-gradient(to top, var(--paper) 70%, transparent);
-    padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+  .fab {
+    position: fixed;
+    bottom: 24px;
+    right: max(24px, calc((100vw - 520px) / 2 + 24px));
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--olive);
+    color: var(--paper-raised);
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    box-shadow: 0 6px 18px rgba(38,39,31,0.22);
+    cursor: pointer;
+    z-index: 20;
+  }
+  .fab:active { background: var(--olive-deep); }
+
+  .overlay {
+    position: fixed; inset: 0;
+    height: 100dvh;
+    background: rgba(38,39,31,0.42);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 30;
+  }
+  .overlay.open { display: flex; }
+
+  .sheet {
+    background: var(--paper);
+    width: 100%;
+    max-width: 520px;
+    border-radius: 18px 18px 0 0;
+    max-height: 85dvh;
     display: flex;
-    gap: 8px;
+    flex-direction: column;
   }
 
-  #new-task {
-    flex: 1;
+  .sheet-body {
+    overflow-y: auto;
+    padding: 22px 20px 10px;
+  }
+
+  .sheet-footer {
+    padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 0 0 18px 18px;
+  }
+
+  .sheet h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .field input[type=text], .field input[type=date], .field textarea, .field select {
+    width: 100%;
     border: 1.5px solid var(--line);
     background: var(--paper-raised);
-    border-radius: 10px;
-    padding: 13px 14px;
-    font-size: 15.5px;
+    border-radius: 9px;
+    padding: 11px 12px;
+    font-size: 15px;
     font-family: 'Inter', sans-serif;
     color: var(--ink);
     outline: none;
+    appearance: none;
+    -webkit-appearance: none;
   }
-
-  #new-task:focus {
-    border-color: var(--olive);
+  .field select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%236B6A5C' d='M4 6l4 4 4-4' stroke='%236B6A5C' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 34px;
   }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--olive); }
+  .field textarea { resize: vertical; min-height: 64px; }
 
-  #add-btn {
-    flex-shrink: 0;
-    width: 46px;
-    border: none;
-    border-radius: 10px;
-    background: var(--olive);
-    color: var(--paper-raised);
-    font-size: 22px;
-    line-height: 1;
+  .toggle-group { display: flex; gap: 8px; }
+  .toggle-btn {
+    flex: 1;
+    border: 1.5px solid var(--line);
+    background: var(--paper-raised);
+    border-radius: 9px;
+    padding: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink-soft);
     cursor: pointer;
   }
+  .toggle-btn.active-Juan { border-color: var(--olive); background: var(--olive-wash); color: var(--olive-deep); font-weight: 600; }
+  .toggle-btn.active-Ana { border-color: var(--plum); background: var(--plum-wash); color: var(--plum); font-weight: 600; }
+  .toggle-btn.active-none { border-color: var(--ink-soft); background: var(--paper); color: var(--ink); font-weight: 600; }
 
-  #add-btn:active { background: var(--olive-deep); }
-
-  .loading-note {
-    text-align: center;
-    padding: 40px;
-    color: var(--ink-soft);
-    font-size: 14px;
+  .sheet-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .btn-primary, .btn-secondary {
+    flex: 1;
+    border: none;
+    border-radius: 9px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
   }
+  .btn-primary { background: var(--olive); color: var(--paper-raised); }
+  .btn-primary:active { background: var(--olive-deep); }
+  .btn-secondary { background: var(--paper-raised); color: var(--ink-soft); border: 1.5px solid var(--line); }
+
+  .delete-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--danger);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+  }
+  .delete-link:active { text-decoration-color: var(--danger); }
+
+  .loading-note { text-align: center; padding: 40px; color: var(--ink-soft); font-size: 14px; }
 </style>
 
 <div id="app">
   <header>
     <div class="date-line" id="date-line"></div>
+    <div class="week-line" id="week-line"></div>
     <h1>Pendientes</h1>
     <div class="status-line" id="status-line"></div>
+    <button class="history-link" id="open-history">Ver historial semanal</button>
   </header>
 
-  <main id="main">
-    <div class="loading-note">Cargando…</div>
-  </main>
+  <main id="main"><div class="loading-note">Cargando…</div></main>
 
-  <form id="add-form">
-    <input id="new-task" type="text" placeholder="Añadir tarea…" autocomplete="off" maxlength="200" />
-    <button id="add-btn" type="submit" aria-label="Añadir">+</button>
-  </form>
+  <button class="fab" id="fab-add" aria-label="Nueva tarea">+</button>
+</div>
+
+<div class="overlay" id="history-overlay">
+  <div class="sheet">
+    <div class="sheet-body" id="history-body">
+      <h2>Historial semanal</h2>
+    </div>
+    <div class="sheet-footer">
+      <div class="sheet-actions">
+        <button type="button" class="btn-secondary" id="history-close" style="flex:1;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="task-overlay">
+  <div class="sheet">
+    <form id="task-form">
+      <div class="sheet-body">
+        <h2 id="task-modal-title">Nueva tarea</h2>
+        <div class="field">
+          <label for="f-title">Título</label>
+          <input type="text" id="f-title" maxlength="120" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f-desc">Descripción</label>
+          <textarea id="f-desc" maxlength="600"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-tag">Etiqueta</label>
+          <select id="f-tag">
+            <option value="">Sin etiqueta</option>
+            <option value="Casa">Casa</option>
+            <option value="Personal">Personal</option>
+            <option value="Regalos">Regalos</option>
+            <option value="Invitaciones">Invitaciones</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-deadline">Fecha límite</label>
+          <input type="date" id="f-deadline">
+        </div>
+        <div class="field">
+          <label>Asignar a</label>
+          <div class="toggle-group" id="assignee-toggle">
+            <button type="button" class="toggle-btn" data-value="">Sin asignar</button>
+            <button type="button" class="toggle-btn" data-value="Juan">Juan</button>
+            <button type="button" class="toggle-btn" data-value="Ana">Ana</button>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-footer">
+        <div class="sheet-actions">
+          <button type="button" class="btn-secondary" id="task-cancel">Cancelar</button>
+          <button type="submit" class="btn-primary" id="task-save">Guardar</button>
+        </div>
+        <button type="button" class="delete-link" id="task-delete" style="display:none;">Eliminar tarea</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="incident-overlay">
+  <div class="sheet">
+    <div class="sheet-body">
+      <h2>Marcar incidencia</h2>
+      <div class="field">
+        <label for="incident-note">¿Qué ha pasado?</label>
+        <textarea id="incident-note" maxlength="300" placeholder="Describe brevemente la incidencia…"></textarea>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <div class="sheet-actions">
+        <button type="button" class="btn-secondary" id="incident-cancel">Cancelar</button>
+        <button type="button" class="btn-primary" id="incident-confirm">Marcar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-  const STORAGE_KEY = 'tasks';
+  const STORAGE_KEY = 'tasks_v2';
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const TAG_ORDER = { 'Casa': 1, 'Personal': 2, 'Regalos': 3, 'Invitaciones': 4 };
+  function tagRank(tag) { return TAG_ORDER[tag] || 99; }
   let tasks = [];
   let loaded = false;
+  let editingId = null;
+  let incidentTargetId = null;
+  let assigneeValue = '';
 
   const mainEl = document.getElementById('main');
   const statusEl = document.getElementById('status-line');
   const dateEl = document.getElementById('date-line');
-  const form = document.getElementById('add-form');
-  const input = document.getElementById('new-task');
+  const weekEl = document.getElementById('week-line');
 
-  dateEl.textContent = new Date().toLocaleDateString('es-ES', {
-    weekday: 'long', day: 'numeric', month: 'long'
-  });
+  const taskOverlay = document.getElementById('task-overlay');
+  const taskForm = document.getElementById('task-form');
+  const fTitle = document.getElementById('f-title');
+  const fDesc = document.getElementById('f-desc');
+  const fTag = document.getElementById('f-tag');
+  const fDeadline = document.getElementById('f-deadline');
+  const assigneeToggle = document.getElementById('assignee-toggle');
+  const taskModalTitle = document.getElementById('task-modal-title');
+  const taskDeleteBtn = document.getElementById('task-delete');
 
-  function uid() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const incidentOverlay = document.getElementById('incident-overlay');
+  const incidentNoteInput = document.getElementById('incident-note');
+
+  dateEl.textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  weekEl.textContent = getWeekLabel(new Date());
+
+  function getISOWeekInfo(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / DAY_MS) + 1) / 7);
+    return { week: weekNo, year: d.getUTCFullYear() };
   }
 
-  function timeLabel(ts) {
-    const d = new Date(ts);
-    const today = new Date();
-    const sameDay = d.toDateString() === today.toDateString();
-    if (sameDay) {
-      return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  function getWeekRange(date) {
+    const day = date.getDay() || 7;
+    const monday = new Date(date);
+    monday.setDate(date.getDate() - day + 1);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return { monday, sunday };
+  }
+
+  function getWeekLabel(date) {
+    const weekNo = getISOWeekInfo(date).week;
+    const { monday, sunday } = getWeekRange(date);
+    const sameMonth = monday.getMonth() === sunday.getMonth();
+    let range;
+    if (sameMonth) {
+      const monthName = sunday.toLocaleDateString('es-ES', { month: 'short' });
+      range = `${monday.getDate()} – ${sunday.getDate()} ${monthName}.`;
+    } else {
+      const mondayStr = monday.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+      const sundayStr = sunday.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+      range = `${mondayStr} – ${sundayStr}`;
     }
-    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    return `Semana ${weekNo} · ${range}`;
   }
 
-  async function loadTasks() {
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+  function loadTasks() {
     try {
-      const result = await window.storage.get(STORAGE_KEY, false);
-      tasks = result ? JSON.parse(result.value) : [];
-    } catch (e) {
-      tasks = [];
-    }
+      const raw = localStorage.getItem(STORAGE_KEY);
+      tasks = raw ? JSON.parse(raw) : [];
+    } catch (e) { tasks = []; }
     loaded = true;
     render();
   }
 
-  async function saveTasks() {
-    try {
-      await window.storage.set(STORAGE_KEY, JSON.stringify(tasks), false);
-    } catch (e) {
-      console.error('No se pudo guardar', e);
-    }
+  function saveTasks() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }
+    catch (e) { console.error('No se pudo guardar', e); }
   }
 
-  function render() {
-    if (!loaded) return;
-
-    const pending = tasks.filter(t => !t.done).sort((a, b) => b.createdAt - a.createdAt);
-    const done = tasks.filter(t => t.done).sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0));
-
-    statusEl.innerHTML = pending.length
-      ? `<strong>${pending.length}</strong> ${pending.length === 1 ? 'pendiente' : 'pendientes'}`
-      : `Todo hecho por hoy`;
-
-    if (tasks.length === 0) {
-      mainEl.innerHTML = `
-        <div class="empty">
-          <div class="glyph">＋</div>
-          <p>Aún no hay nada anotado.<br>Añade tu primera tarea abajo.</p>
-        </div>`;
-      return;
-    }
-
-    let html = '';
-
-    if (pending.length) {
-      html += `<ul class="tasks">` + pending.map(taskRow).join('') + `</ul>`;
-    }
-
-    if (done.length) {
-      html += `<div class="section-label">Completadas</div>`;
-      html += `<ul class="tasks">` + done.map(taskRow).join('') + `</ul>`;
-    }
-
-    mainEl.innerHTML = html;
-  }
-
-  function taskRow(t) {
-    return `
-      <li class="task ${t.done ? 'done' : ''}" data-id="${t.id}">
-        <div class="check" data-action="toggle">
-          <svg viewBox="0 0 16 16" fill="none">
-            <path d="M3 8.5L6.2 12L13 4" stroke="#FBF9F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="task-text">
-          ${escapeHtml(t.text)}
-          <span class="task-time">${timeLabel(t.done ? (t.doneAt || t.createdAt) : t.createdAt)}</span>
-        </div>
-        <button class="remove" data-action="remove" aria-label="Eliminar">×</button>
-      </li>`;
+  function fmtDate(dstr) {
+    if (!dstr) return '';
+    const [y, m, d] = dstr.split('-');
+    const date = new Date(Number(y), Number(m) - 1, Number(d));
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
 
   function escapeHtml(str) {
@@ -368,35 +552,316 @@
     return div.innerHTML;
   }
 
+  function render() {
+    if (!loaded) return;
+
+    const pending = tasks.filter(t => t.status === 'pending');
+    const incident = tasks.filter(t => t.status === 'incident');
+    const done = tasks.filter(t => t.status === 'done');
+    const cancelled = tasks.filter(t => t.status === 'cancelled');
+
+    const byDeadlineThenCreated = (a, b) => {
+      const rankDiff = tagRank(a.tag) - tagRank(b.tag);
+      if (rankDiff !== 0) return rankDiff;
+      if (a.deadline && b.deadline) return a.deadline < b.deadline ? -1 : a.deadline > b.deadline ? 1 : b.createdAt - a.createdAt;
+      if (a.deadline) return -1;
+      if (b.deadline) return 1;
+      return b.createdAt - a.createdAt;
+    };
+    pending.sort(byDeadlineThenCreated);
+    incident.sort(byDeadlineThenCreated);
+    done.sort((a, b) => {
+      const rankDiff = tagRank(a.tag) - tagRank(b.tag);
+      if (rankDiff !== 0) return rankDiff;
+      return (b.statusChangedAt || 0) - (a.statusChangedAt || 0);
+    });
+    cancelled.sort((a, b) => {
+      const rankDiff = tagRank(a.tag) - tagRank(b.tag);
+      if (rankDiff !== 0) return rankDiff;
+      return (b.statusChangedAt || 0) - (a.statusChangedAt || 0);
+    });
+
+    const parts = [];
+    if (pending.length === 0 && incident.length === 0) {
+      statusEl.innerHTML = tasks.length ? 'Todo hecho por hoy' : '';
+    } else {
+      let s = `<strong>${pending.length}</strong> ${pending.length === 1 ? 'pendiente' : 'pendientes'}`;
+      if (incident.length) s += ` · <span class="incident-count">${incident.length} ${incident.length === 1 ? 'incidencia' : 'incidencias'}</span>`;
+      statusEl.innerHTML = s;
+    }
+
+    if (tasks.length === 0) {
+      mainEl.innerHTML = `<div class="empty"><div class="glyph">＋</div><p>Aún no hay nada anotado.<br>Toca el botón + para añadir tu primera tarea.</p></div>`;
+      return;
+    }
+
+    if (incident.length) {
+      parts.push(`<div class="section-label incident-label">Incidencias</div>`);
+      parts.push(`<ul class="tasks">${incident.map(taskRow).join('')}</ul>`);
+    }
+    if (pending.length) {
+      parts.push(`<div class="section-label">Pendientes</div>`);
+      parts.push(`<ul class="tasks">${pending.map(taskRow).join('')}</ul>`);
+    }
+    if (done.length) {
+      parts.push(`<div class="section-label">Completadas</div>`);
+      parts.push(`<ul class="tasks">${done.map(taskRow).join('')}</ul>`);
+    }
+    if (cancelled.length) {
+      parts.push(`<div class="section-label">Canceladas</div>`);
+      parts.push(`<ul class="tasks">${cancelled.map(taskRow).join('')}</ul>`);
+    }
+
+    mainEl.innerHTML = parts.join('');
+  }
+
+  function taskRow(t) {
+    const isOverdue = (t.status === 'pending' || t.status === 'incident') && t.deadline && t.deadline < todayStr();
+    const wasUpdated = t.updatedAt && t.updatedAt !== t.createdAt && (Date.now() - t.updatedAt < DAY_MS);
+
+    let pills = '';
+    if (t.tag) pills += `<span class="pill pill-tag-${t.tag}">${escapeHtml(t.tag)}</span>`;
+    if (wasUpdated) pills += `<span class="pill pill-updated">Actualizada</span>`;
+
+    let metaPills = '';
+    if (t.assignee) metaPills += `<span class="pill pill-assignee-${t.assignee}">${t.assignee}</span>`;
+    if (t.deadline) metaPills += `<span class="pill pill-deadline ${isOverdue ? 'overdue' : ''}">Deadline: ${fmtDate(t.deadline)}</span>`;
+    if (t.status === 'cancelled') metaPills += `<span class="pill pill-status-cancelled">Cancelada</span>`;
+
+    let actions = '';
+    if (t.status === 'pending') {
+      actions = `
+        <button class="action-btn complete" data-action="complete">Completar</button>
+        <button class="action-btn incident" data-action="incident">Incidencia</button>
+        <button class="action-btn cancel" data-action="cancel">Cancelar</button>
+        <button class="action-btn edit" data-action="edit">Editar</button>`;
+    } else if (t.status === 'incident') {
+      actions = `
+        <button class="action-btn complete" data-action="complete">Completar</button>
+        <button class="action-btn cancel" data-action="cancel">Cancelar</button>
+        <button class="action-btn reopen" data-action="reopen">Reabrir</button>
+        <button class="action-btn edit" data-action="edit">Editar</button>`;
+    } else {
+      actions = `
+        <button class="action-btn reopen" data-action="reopen">Reabrir</button>
+        <button class="action-btn edit" data-action="edit">Editar</button>`;
+    }
+
+    return `
+      <li class="task status-${t.status}" data-id="${t.id}">
+        <div class="task-top">
+          <div class="task-title-row">
+            <span class="task-title">${escapeHtml(t.title)}</span>
+            ${pills}
+          </div>
+        </div>
+        ${t.description ? `<div class="task-desc">${escapeHtml(t.description)}</div>` : ''}
+        ${metaPills ? `<div class="task-meta-row">${metaPills}</div>` : ''}
+        ${t.status === 'incident' && t.incidentNote ? `<div class="incident-note"><strong>Incidencia</strong>${escapeHtml(t.incidentNote)}</div>` : ''}
+        <div class="task-actions">${actions}</div>
+      </li>`;
+  }
+
+  // --- Task modal (add / edit) ---
+  function openTaskModal(task) {
+    editingId = task ? task.id : null;
+    taskModalTitle.textContent = task ? 'Editar tarea' : 'Nueva tarea';
+    fTitle.value = task ? task.title : '';
+    fDesc.value = task ? task.description : '';
+    fTag.value = task ? task.tag : '';
+    fDeadline.value = task ? task.deadline : '';
+    setAssignee(task ? task.assignee : '');
+    taskDeleteBtn.style.display = task ? 'block' : 'none';
+    taskOverlay.classList.add('open');
+    setTimeout(() => fTitle.focus(), 50);
+  }
+
+  function closeTaskModal() {
+    taskOverlay.classList.remove('open');
+    taskForm.reset();
+    editingId = null;
+  }
+
+  function setAssignee(value) {
+    assigneeValue = value;
+    [...assigneeToggle.children].forEach(btn => {
+      btn.classList.remove('active-Juan', 'active-Ana', 'active-none');
+      if (btn.dataset.value === value) {
+        btn.classList.add(value ? `active-${value}` : 'active-none');
+      }
+    });
+  }
+
+  assigneeToggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('.toggle-btn');
+    if (!btn) return;
+    setAssignee(btn.dataset.value);
+  });
+
+  document.getElementById('fab-add').addEventListener('click', () => openTaskModal(null));
+  document.getElementById('task-cancel').addEventListener('click', closeTaskModal);
+  taskOverlay.addEventListener('click', (e) => { if (e.target === taskOverlay) closeTaskModal(); });
+
+  taskForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = fTitle.value.trim();
+    if (!title) return;
+    const now = Date.now();
+
+    if (editingId) {
+      const t = tasks.find(t => t.id === editingId);
+      t.title = title;
+      t.description = fDesc.value.trim();
+      t.tag = fTag.value.trim();
+      t.deadline = fDeadline.value;
+      t.assignee = assigneeValue;
+      t.updatedAt = now;
+    } else {
+      tasks.push({
+        id: uid(),
+        title,
+        description: fDesc.value.trim(),
+        tag: fTag.value.trim(),
+        deadline: fDeadline.value,
+        assignee: assigneeValue,
+        status: 'pending',
+        incidentNote: '',
+        createdAt: now,
+        updatedAt: now,
+        statusChangedAt: now
+      });
+    }
+    saveTasks();
+    closeTaskModal();
+    render();
+  });
+
+  taskDeleteBtn.addEventListener('click', () => {
+    if (!editingId) return;
+    tasks = tasks.filter(t => t.id !== editingId);
+    saveTasks();
+    closeTaskModal();
+    render();
+  });
+
+  // --- Incident modal ---
+  function openIncidentModal(id) {
+    incidentTargetId = id;
+    incidentNoteInput.value = '';
+    incidentOverlay.classList.add('open');
+    setTimeout(() => incidentNoteInput.focus(), 50);
+  }
+  function closeIncidentModal() {
+    incidentOverlay.classList.remove('open');
+    incidentTargetId = null;
+  }
+  document.getElementById('incident-cancel').addEventListener('click', closeIncidentModal);
+  incidentOverlay.addEventListener('click', (e) => { if (e.target === incidentOverlay) closeIncidentModal(); });
+  document.getElementById('incident-confirm').addEventListener('click', () => {
+    const t = tasks.find(t => t.id === incidentTargetId);
+    if (!t) return;
+    t.status = 'incident';
+    t.incidentNote = incidentNoteInput.value.trim();
+    t.statusChangedAt = Date.now();
+    saveTasks();
+    closeIncidentModal();
+    render();
+  });
+
+  // --- List actions ---
   mainEl.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     const li = e.target.closest('li.task');
     const id = li.dataset.id;
+    const t = tasks.find(t => t.id === id);
     const action = btn.dataset.action;
 
-    if (action === 'toggle') {
-      const t = tasks.find(t => t.id === id);
-      t.done = !t.done;
-      t.doneAt = t.done ? Date.now() : null;
-      saveTasks();
-      render();
-    } else if (action === 'remove') {
-      tasks = tasks.filter(t => t.id !== id);
-      saveTasks();
-      render();
+    if (action === 'complete') {
+      t.status = 'done'; t.statusChangedAt = Date.now();
+      saveTasks(); render();
+    } else if (action === 'cancel') {
+      t.status = 'cancelled'; t.statusChangedAt = Date.now();
+      saveTasks(); render();
+    } else if (action === 'reopen') {
+      t.status = 'pending'; t.incidentNote = ''; t.statusChangedAt = Date.now();
+      saveTasks(); render();
+    } else if (action === 'incident') {
+      openIncidentModal(id);
+    } else if (action === 'edit') {
+      openTaskModal(t);
     }
   });
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = input.value.trim();
-    if (!text) return;
-    tasks.push({ id: uid(), text, done: false, createdAt: Date.now(), doneAt: null });
-    input.value = '';
-    saveTasks();
-    render();
+  // --- Weekly history ---
+  const historyOverlay = document.getElementById('history-overlay');
+  const historyBody = document.getElementById('history-body');
+
+  function historyTaskRow(t) {
+    let pills = '';
+    if (t.tag) pills += `<span class="pill pill-tag-${t.tag}">${escapeHtml(t.tag)}</span>`;
+    if (t.assignee) pills += `<span class="pill pill-assignee-${t.assignee}">${t.assignee}</span>`;
+    pills += t.status === 'done'
+      ? `<span class="pill pill-tag-Casa" style="background:var(--olive-wash);color:var(--olive-deep);">Completada</span>`
+      : `<span class="pill pill-status-cancelled">Cancelada</span>`;
+    return `
+      <li class="task status-${t.status}">
+        <div class="task-top">
+          <div class="task-title-row">
+            <span class="task-title">${escapeHtml(t.title)}</span>
+            ${pills}
+          </div>
+        </div>
+        ${t.description ? `<div class="task-desc">${escapeHtml(t.description)}</div>` : ''}
+        ${t.status === 'cancelled' && t.incidentNote ? `<div class="incident-note"><strong>Incidencia</strong>${escapeHtml(t.incidentNote)}</div>` : ''}
+      </li>`;
+  }
+
+  function renderHistory() {
+    const finished = tasks.filter(t => t.status === 'done' || t.status === 'cancelled');
+
+    if (finished.length === 0) {
+      historyBody.innerHTML = `<h2>Historial semanal</h2><div class="history-empty">Todavía no hay tareas completadas ni canceladas.<br>Aparecerán aquí, agrupadas por semana, a medida que las vayas resolviendo.</div>`;
+      return;
+    }
+
+    const groups = {};
+    finished.forEach(t => {
+      const refDate = new Date(t.statusChangedAt || t.createdAt);
+      const info = getISOWeekInfo(refDate);
+      const key = `${info.year}-${info.week}`;
+      if (!groups[key]) groups[key] = { year: info.year, week: info.week, refDate, items: [] };
+      groups[key].items.push(t);
+    });
+
+    const orderedKeys = Object.keys(groups).sort((a, b) => {
+      const ga = groups[a], gb = groups[b];
+      if (ga.year !== gb.year) return gb.year - ga.year;
+      return gb.week - ga.week;
+    });
+
+    let html = '<h2>Historial semanal</h2>';
+    orderedKeys.forEach(key => {
+      const g = groups[key];
+      g.items.sort((a, b) => (b.statusChangedAt || 0) - (a.statusChangedAt || 0));
+      html += `
+        <div class="history-week-block">
+          <p class="history-week-title">${getWeekLabel(g.refDate)}</p>
+          <p class="history-week-sub">${g.items.length} ${g.items.length === 1 ? 'tarea resuelta' : 'tareas resueltas'}</p>
+          <ul class="tasks">${g.items.map(historyTaskRow).join('')}</ul>
+        </div>`;
+    });
+    historyBody.innerHTML = html;
+  }
+
+  document.getElementById('open-history').addEventListener('click', () => {
+    renderHistory();
+    historyOverlay.classList.add('open');
   });
+  document.getElementById('history-close').addEventListener('click', () => {
+    historyOverlay.classList.remove('open');
+  });
+  historyOverlay.addEventListener('click', (e) => { if (e.target === historyOverlay) historyOverlay.classList.remove('open'); });
 
   loadTasks();
 </script>
